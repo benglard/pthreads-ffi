@@ -10,24 +10,15 @@ multithread = function(options)
    local globals  = options.globals or {}
    local fname    = options.fname or '_'
    local f        = options.f or 'function(id) end'
-
    globals.total_clock_time = 0
 
    local L = C.luaL_newstate()
    assert(L ~= nil)
    C.luaL_openlibs(L)
 
-   local globals_str = ''
-   for name, value in pairs(globals) do
-      if type(value) == 'string' then
-         globals_str = string.format('%s%s = "%s"\n', globals_str, name, value)
-      else
-         globals_str = string.format('%s%s = %s\n', globals_str, name, value)
-      end
-   end
-
+   local globals_str = utils.table2str(globals)
    local code = string.format(
-[[local ffi = require("ffi")
+[[local ffi = require('ffi')
 require 'socket'
 %s
 %s = %s
@@ -67,7 +58,7 @@ callback = tonumber(ffi.cast('intptr_t', ffi.cast('void *(*)(int)', parse)))]],
 
    local rv = {}
    for name, value in pairs(globals) do
-      local luaval = utils.c2lua(C, L, name, value)
+      local luaval = utils.c2lua(ffi, C, L, name, value)
       if name == 'total_clock_time' and do_time then
          rv[name] = luaval / 1000000
       else

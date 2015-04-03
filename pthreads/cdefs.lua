@@ -38,13 +38,16 @@ int lua_pcall(lua_State *L, int nargs, int nresults, int errfunc);
 
 static const int LUA_GLOBALSINDEX = -10002;
 void lua_getfield(lua_State *L, int index, const char *k);
-ptrdiff_t lua_tointeger(lua_State *L, int index);
-const char *lua_tolstring(lua_State *L, int index, size_t *len);
-int lua_toboolean(lua_State *L, int index);
 void lua_settop(lua_State *L, int index);
 
 typedef ptrdiff_t lua_Integer; 
 void lua_pushinteger(lua_State *L, lua_Integer n);
+
+ptrdiff_t lua_tointeger(lua_State *L, int index);
+const char *lua_tolstring(lua_State *L, int index, size_t *len);
+int lua_toboolean(lua_State *L, int index);
+typedef int (*lua_CFunction) (lua_State *L);
+lua_CFunction lua_tocfunction(lua_State *L, int index);
 ]]
 
 return {ffi, pt}
